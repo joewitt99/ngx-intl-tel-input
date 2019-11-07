@@ -11,11 +11,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/webcat12345/ngx-intl-tel-input"
+    "url": "git+https://github.com/joewitt99/ngx-intl-tel-input"
   },
   "author": {
-    "name": "webcat12345",
-    "email": "webcat91@gmail.com"
+    "name": "Joe Witt"
   },
   "keywords": [
     "angular",
@@ -32,7 +31,7 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/webcat12345/ngx-intl-tel-input/issues"
+    "url": "https://github.com/joewitt99/ngx-intl-tel-input/issues"
   },
   "devDependencies": {
     "@types/google-libphonenumber": "^7.4.17"
