@@ -1,3 +1,6 @@
+# This is a fork of ngx-intl-tel-input
+This fork adds Material design components.  Big thanks to the Contributers of this project.  A great time saver.
+
 # International Telephone Input for Angular (NgxIntlTelInput)
 [![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors)
 
