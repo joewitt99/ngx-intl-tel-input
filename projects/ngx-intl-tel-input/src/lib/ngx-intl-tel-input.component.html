@@ -8,7 +8,7 @@
     </div>
     <div *dropdownMenu class="dropdown-menu country-dropdown">
       <div class="search-container" *ngIf="searchCountryFlag && searchCountryField">
-        <input id="country-search-box" [(ngModel)]="countrySearchText" (keyup)="searchCountry()"
+        <input matInput id="country-search-box" [(ngModel)]="countrySearchText" (keyup)="searchCountry()"
           (click)="$event.stopPropagation()" [placeholder]="searchCountryPlaceholder" autofocus>
       </div>
       <ul class="country-list" #countryList>
@@ -32,8 +32,8 @@
       </ul>
     </div>
   </div>
-  <input type="tel" id="phone" autocomplete="off" [ngClass]="cssClass" (blur)="onTouched()"
+  <input matInput type="tel" id="phone" autocomplete="off" [ngClass]="cssClass" (blur)="onTouched()"
     (keypress)="onInputKeyPress($event)" [(ngModel)]="phoneNumber" (ngModelChange)="onPhoneNumberChange()"
-    [disabled]="disabled" [placeholder]="separateDialCodePlaceHolder(selectedCountry?.placeHolder || '')"
+    [disabled]="disabled"
     [attr.maxLength]="maxLength" [attr.validation]="phoneValidation" #focusable>
 </div>

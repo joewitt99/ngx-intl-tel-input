@@ -1,6 +1,11 @@
 li.country:hover {
 	background-color: rgba(0, 0, 0, 0.05);
 }
+
+:host.floating span {
+  opacity: 1;
+}
+
 .selected-flag.dropdown-toggle:after {
 	content: none;
 }
@@ -17,7 +22,7 @@ li.country:hover {
 	border-collapse: collapse;
 }
 .search-container {
-	position: relative; 
+	position: relative;
 }
 .search-container input {
 	width: 100%;

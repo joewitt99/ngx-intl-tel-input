@@ -1,5 +1,17 @@
-import { Component, OnInit, forwardRef, Input, ViewChild, ElementRef, SimpleChanges, OnChanges } from '@angular/core';
-import { NG_VALIDATORS, NG_VALUE_ACCESSOR } from '@angular/forms';
+import {
+  Component,
+  OnInit,
+  forwardRef,
+  Input,
+  ViewChild,
+  ElementRef,
+  SimpleChanges,
+  OnChanges,
+  HostBinding,
+  DoCheck,
+  Optional, Self
+} from '@angular/core';
+import {NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
 import { CountryCode } from './data/country-code';
 import { phoneNumberValidator } from './ngx-intl-tel-input.validator';
 import { Country } from './model/country.model';
@@ -7,6 +19,9 @@ import * as lpn from 'google-libphonenumber';
 import { SearchCountryField } from './enums/search-country-field.enum';
 import { TooltipLabel } from './enums/tooltip-label.enum';
 import { CountryISO } from './enums/country-iso.enum';
+import {MatFormFieldControl} from '@angular/material';
+import {Subject} from 'rxjs/index';
+import {FocusMonitor} from '@angular/cdk/a11y';
 
 @Component({
 	selector: 'ngx-intl-tel-input',
@@ -14,12 +29,11 @@ import { CountryISO } from './enums/country-iso.enum';
 	styleUrls: ['./ngx-intl-tel-input.component.css'],
 	providers: [
 		CountryCode,
-		{
-			provide: NG_VALUE_ACCESSOR,
-			// tslint:disable-next-line:no-forward-ref
-			useExisting: forwardRef(() => NgxIntlTelInputComponent),
-			multi: true
-		},
+    {
+      provide: MatFormFieldControl,
+      // tslint:disable-next-line:no-forward-ref
+      useExisting: forwardRef(() => NgxIntlTelInputComponent)
+    },
 		{
 			provide: NG_VALIDATORS,
 			useValue: phoneNumberValidator,
@@ -27,7 +41,9 @@ import { CountryISO } from './enums/country-iso.enum';
 		}
 	]
 })
-export class NgxIntlTelInputComponent implements OnInit, OnChanges {
+export class NgxIntlTelInputComponent implements OnInit, OnChanges, DoCheck, MatFormFieldControl<any> {
+
+  static nextId = 0;
 
 	@Input() value = '';
 	@Input() preferredCountries: Array<string> = [];
@@ -43,6 +59,11 @@ export class NgxIntlTelInputComponent implements OnInit, OnChanges {
 	@Input() selectFirstCountry = true;
 	@Input() selectedCountryISO: CountryISO;
 	@Input() phoneValidation = true;
+
+  private _required = false;
+  private _placeholder;
+  stateChanges = new Subject<void>();
+
 	selectedCountry: Country = {
 		areaCodes: undefined,
 		dialCode: '',
@@ -57,7 +78,12 @@ export class NgxIntlTelInputComponent implements OnInit, OnChanges {
 	@Input() separateDialCode = false;
 	separateDialCodeClass: string;
 
+  focused = false;
+
+  @HostBinding() id = `ngx-intl-tel-input-${NgxIntlTelInputComponent.nextId++}`;
+  describedBy = '';
 	phoneNumber = '';
+  errorState = false;
 	allCountries: Array<Country> = [];
 	preferredCountriesInDropDown: Array<Country> = [];
 	// Has to be 'any' to prevent a need to install @types/google-libphonenumber by the package user...
@@ -72,8 +98,19 @@ export class NgxIntlTelInputComponent implements OnInit, OnChanges {
 	propagateChange = (_: any) => { };
 
 	constructor(
-		private countryCodeData: CountryCode
-	) { }
+		private countryCodeData: CountryCode,
+    private fm: FocusMonitor,
+    private elRef: ElementRef<HTMLElement>,
+    @Optional() @Self() public ngControl: NgControl
+	) {
+    if (this.ngControl != null) {
+      this.ngControl.valueAccessor = this;
+    }
+    fm.monitor(elRef.nativeElement, true).subscribe(origin => {
+      this.focused = !!origin;
+      this.stateChanges.next();
+    });
+  }
 
 	ngOnInit() {
 		this.fetchCountryData();
@@ -94,6 +131,13 @@ export class NgxIntlTelInputComponent implements OnInit, OnChanges {
 		this.checkSeparateDialCodeStyle();
 	}
 
+  ngDoCheck(): void {
+    if (this.ngControl) {
+      this.errorState = this.ngControl.invalid && this.ngControl.touched;
+      this.stateChanges.next();
+    }
+  }
+
 	ngOnChanges(changes: SimpleChanges) {
 		if (this.allCountries && changes['selectedCountryISO']
 			&& changes['selectedCountryISO'].currentValue !== changes['selectedCountryISO'].previousValue) {
@@ -101,7 +145,7 @@ export class NgxIntlTelInputComponent implements OnInit, OnChanges {
 		}
 		if (changes.preferredCountries) {
 			this.getPreferredCountries();
-		}		
+		}
 		this.checkSeparateDialCodeStyle();
 	}
 
@@ -377,4 +421,42 @@ export class NgxIntlTelInputComponent implements OnInit, OnChanges {
 		}
 	}
 
+  @HostBinding('class.floating')
+  get shouldLabelFloat() {
+	  return this.focused || !this.empty;
+  }
+
+  @Input()
+  get placeholder(): string {
+    return this._placeholder;
+  }
+
+  set placeholder(value: string) {
+    this._placeholder = value;
+    this.stateChanges.next();
+  }
+
+  setDescribedByIds(ids: string[]) {
+    this.describedBy = ids.join(' ');
+  }
+
+  onContainerClick(event: MouseEvent) {
+    if ((event.target as Element).tagName.toLowerCase() != 'input') {
+      this.elRef.nativeElement.querySelector('input').focus();
+    }
+  }
+
+  get empty() {
+    return !this.phoneNumber ;
+  }
+
+  @Input()
+  get required(): boolean {
+    return this._required;
+  }
+
+  set required(value: boolean) {
+    this._required = value;
+    this.stateChanges.next();
+  }
 }

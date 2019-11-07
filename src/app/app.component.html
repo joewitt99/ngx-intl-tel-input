@@ -10,22 +10,26 @@
     <label>&nbsp;Separate Dial Code?</label>
   </div>
   <form #f="ngForm" [formGroup]="phoneForm">
-    <div class="mb-2">
-      <ngx-intl-tel-input 
-        [cssClass]="'custom'" 
+    <div class="mb-3">
+      <mat-form-field appearance="outline" [floatLabel]="'always'" style="width: 100%">
+        <mat-label>Primary Phone</mat-label>
+      <ngx-intl-tel-input
+        [cssClass]="'custom'"
         [preferredCountries]="preferredCountries"
-        [enableAutoCountrySelect]="false" 
-        [enablePlaceholder]="true" 
-        [searchCountryFlag]="true"
+        [enableAutoCountrySelect]="false"
+        [enablePlaceholder]="true"
+        [placeholder]="'Phone'"
+        [searchCountryFlag]="false"
         [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
-        [selectFirstCountry]="false" 
+        [selectFirstCountry]="false"
         [selectedCountryISO]="CountryISO.India"
-        [maxLength]="15" 
-        [tooltipField]="TooltipLabel.Name" 
-        [phoneValidation]="true" 
+        [maxLength]="15"
+        [tooltipField]="TooltipLabel.Name"
+        [phoneValidation]="true"
         [separateDialCode]="separateDialCode"
         name="phone" formControlName="phone">
       </ngx-intl-tel-input>
+      </mat-form-field>
     </div>
     <div class="mb-2">
       <button (click)="f.reset()">Reset</button>

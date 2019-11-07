@@ -3,6 +3,7 @@ import { NgxIntlTelInputComponent } from './ngx-intl-tel-input.component';
 import { CommonModule } from '@angular/common';
 import { BsDropdownModule, TooltipModule } from 'ngx-bootstrap';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatInputModule, MatFormFieldModule } from '@angular/material';
 import { NgxIntlTelInputService } from './ngx-intl-tel-input.service';
 
 @NgModule({
@@ -11,6 +12,8 @@ import { NgxIntlTelInputService } from './ngx-intl-tel-input.service';
 		CommonModule,
 		FormsModule,
 		ReactiveFormsModule,
+    MatInputModule,
+    MatFormFieldModule,
 		BsDropdownModule.forRoot(),
 		TooltipModule.forRoot()
 	],
